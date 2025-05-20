@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chatbot Bilingüe Pepi</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/botui/build/botui.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/botui/build/botui-theme-default.css" />
+</head>
+<body>
+
+<div id="botui-app">
+  <bot-ui></bot-ui>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/botui/build/botui.min.js"></script>
+<script>
+  var botui = new BotUI('botui-app');
+  let lang = 'es'; // idioma por defecto
+
+  // ✨ Objeto con todas las traducciones (para mantener ordenado)
+  const translations = {
+    es: {
+      chooseLanguage: 'Elige un idioma:',
+      greeting: '¡Hola! Soy Pepi, ¿en qué puedo ayudarte?',
+      options: [
+        { text: '📅 Horario', value: 'horario' },
+        { text: '📍 Ubicación', value: 'ubicacion' },
+        { text: '📞 Contacto', value: 'contacto' },
+        { text: '💼 Servicios', value: 'servicios' },      // Nuevo ✨
+        { text: '💰 Precios', value: 'precios' }           // Nuevo ✨
+      ],
+      responses: {
+        horario: '⏰ Abrimos de lunes a viernes (9:00 - 18:00).',
+        ubicacion: '🗺️ Estamos en Calle Ejemplo 123, Valencia.',
+        contacto: '📞 Llámanos al 123 456 789 o escribe a info@ejemplo.com.',
+        servicios: '🔧 Ofrecemos: Desarrollo Web, Chatbots y SEO.',  // Nuevo ✨
+        precios: '💵 Consulta nuestros paquetes desde $100/mes.'      // Nuevo ✨
+      },
+      backButton: '↩ Volver al inicio'
+    },
+    en: {
+      chooseLanguage: 'Choose a language:',
+      greeting: 'Hi! I\'m Pepi, how can I help you?',
+      options: [
+        { text: '📅 Hours', value: 'horario' },
+        { text: '📍 Location', value: 'ubicacion' },
+        { text: '📞 Contact', value: 'contacto' },
+        { text: '💼 Services', value: 'servicios' },       // Nuevo ✨
+        { text: '💰 Pricing', value: 'precios' }           // Nuevo ✨
+      ],
+      responses: {
+        horario: '⏰ We\'re open Monday to Friday (9:00 AM - 6:00 PM).',
+        ubicacion: '🗺️ Find us at 123 Example Street, Valencia.',
+        contacto: '📞 Call us at 123 456 789 or email info@example.com.',
+        servicios: '🔧 We offer: Web Development, Chatbots, and SEO.',  // Nuevo ✨
+        precios: '💵 Check our packages starting at $100/month.'        // Nuevo ✨
+      },
+      backButton: '↩ Back to start'
+    }
+  };
+
+  // Función para iniciar el chatbot
+  function startChat() {
+    botui.message.add({
+      content: translations[lang].greeting
+    }).then(showOptions);
+  }
+
+  // Función para mostrar opciones (reutilizable)
+  function showOptions() {
+    botui.action.button({
+      action: translations[lang].options
+    }).then(function (res) {
+      botui.message.add({
+        content: translations[lang].responses[res.value]
+      }).then(function () {
+        // ✨ Botón para volver al inicio
+        botui.action.button({
+          action: [{
+            text: translations[lang].backButton,
+            value: 'back'
+          }]
+        }).then(startChat); // Vuelve a empezar
+      });
+    });
+  }
+
+  // Primer mensaje (elige idioma)
+  botui.message.add({
+    content: translations.es.chooseLanguage
+  }).then(function () {
+    return botui.action.button({
+      action: [
+        { text: 'Español 🇪🇸', value: 'es' },
+        { text: 'English 🇬🇧', value: 'en' }
+      ]
+    });
+  }).then(function (res) {
+    lang = res.value;
+    startChat(); // Inicia el flujo principal
+  });
+</script>
+
+</body>
+</html>
